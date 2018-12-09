@@ -1,0 +1,32 @@
+#import relevant modules#
+import paramiko
+import time
+
+#define directory with device IPs#
+netdir=open("/home/alexb/Desktop/netdev.txt")
+netdir.seek(0)
+
+#define device ,useranme and password#
+ip_address = netdir.read()
+netdir.close()
+username = str(input("username:"))
+password = str(input("Password:"))
+
+#SSH to the Device#
+ssh_client = paramiko.SSHClient()
+ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_client.connect(hostname=ip_address,username=username,password=password)
+print ("Successful connection", ip_address)
+
+#excute commands#
+remote_connection = ssh_client.invoke_shell()
+remote_connection.send("configure terminal\n")
+remote_connection.send("int loop 3\n")
+remote_connection.send("ip addr 3.3.3.3 255.255.255.255\n")
+time.sleep(0.5)
+remote_connection.send("end\n")
+
+#close connection#
+time.sleep(1)
+print ("closing session to", ip_address)
+ssh_client.close
