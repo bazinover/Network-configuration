@@ -1,0 +1,23 @@
+#import relevant modules#
+import paramiko
+import time 
+#define device ,useranme and password#
+ip_address = "172.17.103.13"
+username = str(input("username:"))
+password = str(input("Password:"))
+#SSH to the Device#
+ssh_client = paramiko.SSHClient()
+ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_client.connect(hostname=ip_address,username=username,password=password)
+print ("Successful connection", ip_address)
+#excute commands#
+remote_connection = ssh_client.invoke_shell()
+remote_connection.send("configure terminal\n")
+remote_connection.send("int loop 2\n")
+remote_connection.send("ip addr 2.2.2.2 255.255.255.255\n")
+time.sleep(0.5)
+remote_connection.send("end\n")
+#close connection#
+time.sleep(1)
+print ("closing session to", ip_address)
+ssh_client.close
