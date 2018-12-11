@@ -1,0 +1,37 @@
+#import relevant modules#
+import paramiko
+import time 
+
+#Input useranme and password#
+username = str(input("username:"))
+password = str(input("Password:"))
+
+#define directory with device IPs
+netdir=open("/home/alexb/Desktop/netdev.txt")
+netdir.seek(0)
+List_devip=netdir.readlines()
+
+#loop to run ssh for each switch in the list
+for ip in List_devip:
+
+	#Define ip address
+    ip_address = ip.strip()
+
+    #SSH to the Device#
+    ssh_client = paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_client.connect(hostname=ip_address,username=username,password=password)
+    print ("Successful connection", ip_address)
+
+    #excute commands#
+    remote_connection = ssh_client.invoke_shell()
+    remote_connection.send("configure terminal\n")
+    remote_connection.send("int loop 2\n")
+    remote_connection.send("description PYTHON SCRIPT CONFIG 2222\n")
+    time.sleep(0.5)
+    remote_connection.send("end\n")
+
+    #close connection#
+    time.sleep(1)
+    print ("closing session to", ip_address)
+    ssh_client.close
